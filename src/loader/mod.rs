@@ -431,7 +431,8 @@ impl<'a, S: Settings<'a>> Program<'a, S> {
 pub struct UnflattenedProgram<'a, S: Settings<'a>> {
     pub c: CommonProgram<'a>,
     pub s: S,
-    pub functions: Vec<BlocklessDag<'a>>,
+    /// The functions defined in the module. Indexed by function idx.
+    pub functions: BTreeMap<u32, BlocklessDag<'a>>,
 }
 
 impl<'a, S: Settings<'a>> UnflattenedProgram<'a, S> {
@@ -1258,7 +1259,7 @@ pub fn load_wasm_unflattened<'a, S: Settings<'a>>(
 
         s: settings,
 
-        functions: Vec::new(),
+        functions: BTreeMap::new(),
     };
 
     // This is the memory layout of the program after all the elements have been allocated:
@@ -1391,7 +1392,7 @@ pub fn load_wasm_unflattened<'a, S: Settings<'a>>(
 
                         let wrapper_dag =
                             generate_imported_func_wrapper_unflattened::<S>(&ctx, func_idx);
-                        ctx.functions.push(wrapper_dag);
+                        ctx.functions.insert(func_idx, wrapper_dag);
                     } else if import.module == "spectest" {
                         // To run the tests, the runtime must provide a few basic imports
                         // of the `spectest` module.
@@ -1755,7 +1756,7 @@ pub fn load_wasm_unflattened<'a, S: Settings<'a>>(
 
                 let blockless_dag = blockless_dag::BlocklessDag::new(dag, &mut label_gen);
 
-                ctx.functions.push(blockless_dag);
+                ctx.functions.insert(func_idx, blockless_dag);
             }
             Payload::DataSection(section) => {
                 log::debug!("Data Section found");
