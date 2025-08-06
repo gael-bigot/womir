@@ -1,5 +1,5 @@
 mod block_tree;
-mod blockless_dag;
+pub mod blockless_dag;
 mod dag;
 pub mod flattening;
 mod locals_data_flow;
