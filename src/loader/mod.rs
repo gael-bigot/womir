@@ -1,6 +1,6 @@
 mod block_tree;
 pub mod blockless_dag;
-mod dag;
+pub mod dag;
 pub mod flattening;
 mod locals_data_flow;
 
